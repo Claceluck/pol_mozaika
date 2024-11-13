@@ -69,9 +69,9 @@ class3.type = 1;
 class3.par1 = [4 6];
 class3.par2 = eye(2,2);
 
-class_data{1} = { class1, class2, class3 };
-axis_data{1} = [-5 10 -2 13];
-data_type_names{1} = 'Normal';
+class_data{14} = { class1, class2, class3 };
+axis_data{14} = [-5 10 -2 13];
+data_type_names{14} = 'Normal';
 
 % Классы имеют распределения в форме GMM
 
@@ -316,28 +316,156 @@ class_data{12} = { class1, class2, class3 };
 axis_data{12} = [-5 10 -2 13];
 data_type_names{12} = 'Normal2';
 
+% Мой Вариант мозайки (Филипп)
+h = 1;
+p_start = [0; 0];
+n1 = 6;
+n2 = 6;
+
+% ------
+pentagon_1 = [ 
+    -1*h,   -1*h,   -0.5*h,  0*h,   -0.5*h, -1*h;
+     1*h,   -1*h,   -1*h,    0*h,    1*h,    1*h
+];
+
+pentagon_2 = [
+     0.5*h,  1*h,    1*h,    0.5*h,  0*h,    0.5*h;
+     1*h,    1*h,   -1*h,   -1*h,    0*h,    1*h
+];
+
+triangle_up = [ 
+    -0.5*h,  0.5*h,   0*h,   -0.5*h;
+     1*h,    1*h,     0*h,    1*h
+];
+
+triangle_down = [ 
+    -0.5*h,  0.5*h,   0*h,   -0.5*h;
+    -1*h,   -1*h,     0*h,   -1*h
+];
+
+pgm_purple_hexagon = generate_hexagon(h, p_start, n1, n2, pentagon_1);
+pgm_pink_hexagon = generate_hexagon(h, p_start, n1, n2, pentagon_2);
+
+pgm_triangle_up = generate_triangle(h, p_start, n1, n2, triangle_up);
+pgm_triangle_down = generate_triangle(h, p_start, n1, n2, triangle_down);
+
+class1.type = 3;
+class1.par1 = {};
+for i = 1:n1
+    for j = 1:n2
+        if mod(i + j, 2) == 1
+            class1.par1{(i-1)*n2 + j} = {5, pgm_purple_hexagon{(i-1)*n2 + j}(1,:), pgm_purple_hexagon{(i-1)*n2 + j}(2,:), 0};
+        else
+            class1.par1{(i-1)*n2 + j} = {5, pgm_pink_hexagon{(i-1)*n2 + j}(1,:), pgm_pink_hexagon{(i-1)*n2 + j}(2,:), 0};
+        end
+    end
+end
+class1.par2 = {};
+
+class2.type = 3;
+class2.par1 = {};
+for i = 1:n1
+    for j = 1:n2
+        if mod(i, 2) == 1
+            if mod(j, 2) == 1
+                class2.par1{(i-1)*n2 + j} = {5, pgm_triangle_up{(i-1)*n2 + j}(1,:), pgm_triangle_up{(i-1)*n2 + j}(2,:), 0};
+            else
+                class2.par1{(i-1)*n2 + j} = {5, pgm_triangle_down{(i-1)*n2 + j}(1,:), pgm_triangle_down{(i-1)*n2 + j}(2,:), 0};
+            end
+        else
+            if mod(j, 2) == 1
+                class2.par1{(i-1)*n2 + j} = {5, pgm_triangle_up{(i-1)*n2 + j}(1,:), pgm_triangle_up{(i-1)*n2 + j}(2,:), 0};
+            else
+                class2.par1{(i-1)*n2 + j} = {5, pgm_triangle_down{(i-1)*n2 + j}(1,:), pgm_triangle_down{(i-1)*n2 + j}(2,:), 0};
+            end
+        end
+    end
+end
+class2.par2 = {};
+
+class3.type = 3;
+class3.par1 = {};
+for i = 1:n1
+    for j = 1:n2
+        if mod(i + j, 2) == 1
+            class3.par1{(i-1)*n2 + j} = {5, pgm_pink_hexagon{(i-1)*n2 + j}(1,:), pgm_pink_hexagon{(i-1)*n2 + j}(2,:), 0};
+        else
+            class3.par1{(i-1)*n2 + j} = {5, pgm_purple_hexagon{(i-1)*n2 + j}(1,:), pgm_purple_hexagon{(i-1)*n2 + j}(2,:), 0};
+        end
+    end
+end
+class3.par2 = {};
+
+class4.type = 3;
+class4.par1 = {};
+for i = 1:n1
+    for j = 1:n2
+        if mod(i, 2) == 1
+            if mod(j, 2) == 1
+                class4.par1{(i-1)*n2 + j} = {5, pgm_triangle_down{(i-1)*n2 + j}(1,:), pgm_triangle_down{(i-1)*n2 + j}(2,:), 0};
+            else
+                class4.par1{(i-1)*n2 + j} = {5, pgm_triangle_up{(i-1)*n2 + j}(1,:), pgm_triangle_up{(i-1)*n2 + j}(2,:), 0};
+            end
+        else
+            if mod(j, 2) == 1
+                class4.par1{(i-1)*n2 + j} = {5, pgm_triangle_down{(i-1)*n2 + j}(1,:), pgm_triangle_down{(i-1)*n2 + j}(2,:), 0};
+            else
+                class4.par1{(i-1)*n2 + j} = {5, pgm_triangle_up{(i-1)*n2 + j}(1,:), pgm_triangle_up{(i-1)*n2 + j}(2,:), 0};
+            end
+        end
+    end
+end
+class4.par2 = {};
 
 
-class_data = class_data(~cellfun('isempty',class_data));
-axis_data = axis_data(~cellfun('isempty',axis_data));
-data_type_names = data_type_names(~cellfun('isempty',data_type_names));
+class_data{1} = {class1, class2, class3, class4};
+
+axis_data{1} = [0 11 0 11];
+data_type_names{1} = 'Mozaic Philipp';
+
+class_data = class_data(~cellfun('isempty', class_data));
+axis_data = axis_data(~cellfun('isempty', axis_data));
+data_type_names = data_type_names(~cellfun('isempty', data_type_names));
+
 
 axis_rect = axis_data;
 
-data_type_per_class = cell(length(class_data),1);
+data_type_per_class = cell(length(class_data), 1);
 C = zeros(1, length(class_data));
 for i = 1:length(class_data)
     C(i) = length(class_data{i});
     for j = 1:length(class_data{i})
         data_type_per_class{i}(j) = class_data{i}{j}.type;
-    end;
-end;
-
+    end
+end
 
 % Данные, описывающие рапределение исходных классов
 %class_data = {class_data1, class_data2, class_data3, class_data4, class_data5, class_data6, class_data7, class_data8, class_data9, class_data10};
 
 end
+
+% Генерация треугольников
+function generate_poly_triangle = generate_triangle(h, p_start, n1, n2, triangle_poly)
+triangle_poly = triangle_poly + p_start * ones(1, size(triangle_poly, 2));
+generate_poly_triangle = cell(n1, n2);
+    for i = 1:n1
+        for j = 1:n2
+            generate_poly_triangle{i,j} = triangle_poly + [(i-1)*2*h;(j-1)*2*h] * ones(1, size(triangle_poly,2));
+        end;
+    end;
+end
+ 
+% Генерация шестиугольников
+function generate_poly_hexagon = generate_hexagon(h, p_start, n1, n2, hexagon_poly)
+hexagon_poly = hexagon_poly + p_start * ones(1, size(hexagon_poly, 2));
+generate_poly_hexagon = cell(n1, n2);
+    for i = 1:n1
+        for j = 1:n2
+            generate_poly_hexagon{i,j} = hexagon_poly + [(i-1)*2*h;(j-1)*2*h] * ones(1, size(hexagon_poly,2));
+        end;
+    end;
+end
+
 function hex_poly_matr = generate_hex_pgm(h, p_start, n1, n2)
 k = h*sqrt(3)/2;
 hex_poly = [0 k k 0 -k -k 0;-h -h/2 h/2 h h/2 -h/2 -h];
@@ -352,6 +480,7 @@ for i = 1:n1
 end;
 
 end
+
 function [ncl, t_pgm] = tile_hex_pgm (pgm, type)
 [n1,n2] = size(pgm);
 t_pgm = zeros(n1,n2);
